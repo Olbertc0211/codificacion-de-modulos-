@@ -32,11 +32,11 @@ La API Laravel es el backend al que se conecta el front-end. Las páginas PHP an
 
 Se preparó `laravel-backend/` como una aplicación independiente con Laravel 13, Sanctum, controladores, modelos Eloquent, migraciones y pruebas de características. Implementa autenticación bearer, usuarios, productos, inventario y ventas. `script.js` consume esta API para inicio de sesión, catálogo, carrito/registro de ventas, inventario, usuarios y reportes. Se conserva el backend nativo como respaldo y para las páginas existentes.
 
-La integración del front-end está implementada, pero la API todavía requiere instalación y ejecución: el PHP de XAMPP disponible es 8.0.30 y no se detectó Composer, mientras que `composer.json` requiere PHP 8.3 o posterior. No es necesario sustituir XAMPP: puede instalarse PHP 8.3 NTS aparte para la terminal y Composer, conservando XAMPP para Apache y MySQL. El instalador guiado instala dependencias, configura `.env`, genera credenciales administrativas y ejecuta migraciones y pruebas contra la base separada. CORS se limita a orígenes de desarrollo local. La base original `suplementor` no se modifica.
+La integración del front-end está implementada y fue verificada localmente con PHP 8.5, Composer, MySQL/MariaDB y la base separada. XAMPP conserva su PHP 8.0.30 para páginas antiguas y ofrece Apache y MySQL; PHP 8.5 se ejecuta aparte para Laravel. El instalador guiado instala dependencias, configura `.env`, genera credenciales administrativas y ejecuta migraciones y pruebas. CORS se limita a orígenes de desarrollo local. La base original `suplementor` no se modifica.
 
 ## Puesta en marcha y siguiente paso
 
-Para ejecutar el conjunto, instala PHP 8.3 y Composer, crea `suplementor_laravel`, ejecuta el instalador y mantén Apache, MySQL y `php artisan serve` activos. Antes de retirar el backend PHP antiguo, verifica el flujo integrado y respalda/migra los datos necesarios.
+Para ejecutar el conjunto en otro equipo, instala PHP 8.3+ y Composer, crea `suplementor_laravel` con MySQL Workbench, ejecuta el instalador y mantén Apache, MySQL y `php artisan serve` activos. Antes de retirar el backend PHP antiguo, respalda y migra los datos necesarios.
 
 ## Convenciones aplicadas en la documentación de esta entrega
 

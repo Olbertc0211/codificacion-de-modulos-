@@ -71,7 +71,7 @@ if ($missingExtensions.Count -gt 0) {
 
 Write-Host "PHP: $($php.Source) (PHP $phpVersionId)"
 Write-Host "Composer: $($composer.Source)"
-Write-Host "Base esperada: suplementor_laravel. Créala vacía en phpMyAdmin antes de continuar."
+Write-Host "Base esperada: suplementor_laravel. Créala vacía desde MySQL Workbench antes de continuar."
 $confirmation = Read-Host "Escribe SI para instalar dependencias, configurar la aplicación y ejecutar migraciones y pruebas"
 if ($confirmation -cne "SI") {
     Write-Host "Instalación cancelada; no se hicieron cambios en la base de datos."

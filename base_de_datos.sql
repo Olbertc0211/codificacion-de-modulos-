@@ -1,5 +1,5 @@
 -- Base de datos de Suplementor
--- Importar este archivo desde phpMyAdmin en XAMPP.
+-- Ejecutar este archivo desde MySQL Workbench conectado al MySQL local de XAMPP.
 
 CREATE DATABASE IF NOT EXISTS suplementor
     CHARACTER SET utf8mb4

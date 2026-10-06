@@ -2,7 +2,7 @@
 
 Aplicación web académica para consultar suplementos deportivos, iniciar sesión y administrar productos, inventario y ventas. El front-end se conecta a una API desarrollada con Laravel 13 y Sanctum; el backend PHP original se conserva como respaldo.
 
-> **Para ejecutar el proyecto:** Laravel necesita PHP 8.3+ y Composer 2. El XAMPP de este equipo contiene PHP 8.0.30, así que instala PHP 8.3 por separado y conserva XAMPP para Apache y MySQL. El instalador guiado crea la configuración local, ejecuta las migraciones y pruebas; consulta [`laravel-backend/README.md`](laravel-backend/README.md).
+> **Para ejecutar el proyecto:** Laravel necesita PHP 8.3+ y Composer 2. En este equipo se configuró PHP 8.5 por separado y se conservó XAMPP para Apache y MySQL. El instalador guiado prepara dependencias, configuración, base de datos y cuenta administradora; consulta [`laravel-backend/README.md`](laravel-backend/README.md).
 
 ## Tecnologías
 
@@ -16,24 +16,25 @@ Aplicación web académica para consultar suplementos deportivos, iniciar sesió
 ## Requisitos
 
 - XAMPP con Apache, MySQL y PHP.
+- MySQL Workbench para administrar las bases de datos (no se requiere phpMyAdmin).
 - Un navegador web.
 - Git, si se requiere trabajar con historial de versiones.
+- Para el backend Laravel conectado al front-end: PHP 8.3+ y Composer 2. El PHP 8.0 incluido en este XAMPP no cumple ese requisito.
 
-## Instalación local
+## Backend PHP anterior (respaldo)
 
-1. Copia la carpeta del proyecto en `C:\xampp\htdocs\suplementor`.
-2. Abre el panel de XAMPP e inicia **Apache** y **MySQL**.
-3. Abre `http://localhost/phpmyadmin`.
-4. Importa el archivo `base_de_datos.sql`. El script crea la base `suplementor` y las tablas `usuarios`, `productos`, `ventas` y `detalle_ventas`.
-5. Revisa los parámetros de conexión en `conexion.php`. La configuración incluida corresponde a XAMPP local (`localhost`, usuario `root`, contraseña vacía).
-6. Si todavía no existe un administrador, abre `http://localhost/suplementor/crear_usuario.php` desde el mismo equipo. El instalador crea `admin@localhost`, genera una contraseña aleatoria y la muestra una sola vez. Guárdala de forma segura; el instalador no puede recuperarla.
-7. Abre la aplicación en `http://localhost/suplementor/index.html`. No abras `index.html` directamente desde el explorador de archivos, porque PHP requiere Apache.
+Para conservar o consultar el backend PHP antiguo:
 
-El instalador solo acepta solicitudes locales y no crea otro administrador si ya existe uno. Elimina o deshabilita `crear_usuario.php` después de su uso.
+1. Copia la carpeta en `C:\xampp\htdocs\suplementor` e inicia **Apache** y **MySQL** desde XAMPP.
+2. En MySQL Workbench conéctate a `127.0.0.1:3306` con el usuario y contraseña configurados para MySQL.
+3. Abre y ejecuta `base_de_datos.sql` desde Workbench. El script crea la base `suplementor` y sus tablas.
+4. Revisa las credenciales de conexión en `conexion.php`. La configuración predeterminada de XAMPP es `root` sin contraseña.
+
+Este backend se conserva como respaldo. El front-end principal usa la API Laravel descrita a continuación.
 
 ## Preparar y ejecutar Laravel
 
-Sigue [`laravel-backend/README.md`](laravel-backend/README.md): instala PHP 8.3 y Composer, crea `suplementor_laravel`, ejecuta `scripts/Install-Suplementor.ps1` y arranca Laravel con `php artisan serve`. Inicia Apache y MySQL desde XAMPP y abre `http://localhost/suplementor/index.html`. El JavaScript de la interfaz consume Laravel; la base original `suplementor` se conserva sin cambios.
+Sigue [`laravel-backend/README.md`](laravel-backend/README.md): instala PHP 8.3+ y Composer, crea `suplementor_laravel` desde MySQL Workbench, ejecuta `scripts/Install-Suplementor.ps1` y arranca Laravel con `php artisan serve`. Inicia Apache y MySQL desde XAMPP y abre `http://localhost/suplementor/index.html`. La base original `suplementor` no se modifica. No se necesita phpMyAdmin.
 
 ## Estructura actual
 
