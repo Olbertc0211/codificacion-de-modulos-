@@ -52,7 +52,7 @@ Si `where.exe php` muestra `C:\xampp\php\php.exe` antes de `C:\php85\php.exe`, m
    powershell -ExecutionPolicy Bypass -File .\scripts\Install-Suplementor.ps1
    ```
 
-   El instalador comprueba PHP y extensiones, Composer, instala dependencias, pregunta el correo del administrador y las credenciales locales de MySQL, genera una contraseña administrativa aleatoria y configura `.env`. Luego aplica migraciones y seed, lista rutas y ejecuta pruebas. Confirma que `suplementor_laravel` esté vacía antes de continuar.
+   El instalador comprueba PHP y extensiones, Composer, instala dependencias, pregunta el correo del administrador y las credenciales locales de MySQL, genera una contraseña administrativa aleatoria y configura `.env`. Luego aplica migraciones y seed, lista rutas y ejecuta pruebas. El seed crea cinco productos de demostración y al administrador. Confirma que `suplementor_laravel` esté vacía antes de continuar.
 
 5. Al finalizar, copia y guarda la contraseña que muestra el instalador. No se puede volver a mostrar y el `.env` no se sube a Git.
 6. Con XAMPP (Apache y MySQL) iniciado, abre una segunda terminal en `laravel-backend` y ejecuta:
@@ -111,4 +111,4 @@ Las migraciones Laravel describen las tablas `usuarios`, `productos`, `ventas` y
 
 ## Pruebas
 
-Las pruebas de `tests/Feature/ApiTest.php` comprueban inicio de sesión, acceso protegido, permisos de administrador y registro de ventas con descuento del stock. Ejecútalas desde `laravel-backend` con `php artisan test`. El repositorio incluye `composer.lock` para instalar las mismas versiones de dependencias con `composer install`.
+Las pruebas de `tests/Feature/ApiTest.php` comprueban inicio de sesión, acceso protegido, permisos de administrador y registro de ventas con descuento del stock. El seed agrega cinco productos de demostración para que el catálogo no aparezca vacío. Ejecútalas desde `laravel-backend` con `php artisan test`. El repositorio incluye `composer.lock` para instalar las mismas versiones de dependencias con `composer install`.

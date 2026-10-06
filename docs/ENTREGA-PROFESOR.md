@@ -19,7 +19,7 @@ La base de datos contiene las tablas `usuarios`, `productos`, `ventas` y `detall
 
 ## Tecnologías y alcance
 
-La interfaz de la aplicación utiliza HTML, CSS y JavaScript y consume la API Laravel 13 con Sanctum, controladores, modelos Eloquent, migraciones y pruebas, ubicada en `laravel-backend/`. El JavaScript está conectado para autenticación, catálogo, inventario, gestión de usuarios y ventas. El proyecto conserva el backend anterior en PHP nativo y utiliza la base separada `suplementor_laravel` para Laravel. En el computador de desarrollo, las migraciones y pruebas ya se ejecutaron correctamente. En otro equipo se requiere PHP 8.3+ y Composer; la guía explica la instalación y puesta en marcha.
+La interfaz de la aplicación utiliza HTML, CSS y JavaScript y consume la API Laravel 13 con Sanctum, controladores, modelos Eloquent, migraciones y pruebas, ubicada en `laravel-backend/`. El JavaScript está conectado para autenticación, catálogo, inventario, gestión de usuarios y ventas. El proyecto conserva el backend anterior en PHP nativo y utiliza la base separada `suplementor_laravel` para Laravel. El instalador carga cinco productos de demostración y crea la cuenta administradora. En el computador de desarrollo, las migraciones y pruebas ya se ejecutaron correctamente. En otro equipo se requiere PHP 8.3+ y Composer; la guía explica la instalación y puesta en marcha.
 
 ## Versionamiento y colaboración
 
@@ -27,4 +27,4 @@ El proyecto está versionado con Git. Antes de entregar, se deben registrar los 
 
 ## Texto sugerido para presentar
 
-> Profesor(a): presentamos el módulo Suplementor con interfaz HTML, CSS y JavaScript conectada a una API Laravel 13 y Sanctum. La API ofrece autenticación por token, gestión de productos, inventario y usuarios, y registro de ventas validando el stock mediante transacciones. Laravel usa una base separada llamada `suplementor_laravel` para conservar los datos originales. En el equipo de desarrollo se validaron la instalación, las migraciones, las pruebas y el inicio de sesión. Para ejecutarlo en otro equipo, se requiere PHP 8.3+ y Composer; siga la guía, inicie Apache y MySQL en XAMPP y Laravel con `php artisan serve`.
+> Profesor(a): presentamos el módulo Suplementor con interfaz HTML, CSS y JavaScript conectada a una API Laravel 13 y Sanctum. La API ofrece autenticación por token, gestión de productos, inventario y usuarios, y registro de ventas validando el stock mediante transacciones. Laravel usa una base separada llamada `suplementor_laravel` para conservar los datos originales. El instalador prepara una cuenta administradora y cinco productos de demostración. En el equipo de desarrollo se validaron la instalación, las migraciones, las pruebas y el inicio de sesión. Para ejecutarlo en otro equipo, se requiere PHP 8.3+ y Composer; siga la guía, inicie Apache y MySQL en XAMPP y Laravel con `php artisan serve`.
