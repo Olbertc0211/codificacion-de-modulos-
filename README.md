@@ -33,20 +33,13 @@ El instalador solo acepta solicitudes locales y no crea otro administrador si ya
 
 ## Backend Laravel en preparación
 
-Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). No es necesario reemplazar XAMPP: se instala PHP 8.3 aparte para Laravel/Composer y se conserva XAMPP para el sitio anterior y MySQL. Usa la base nueva `suplementor_laravel`; la base `suplementor` y el sitio anterior no se modifican. La interfaz actual sigue utilizando sus endpoints PHP nativos hasta completar y probar una fase posterior de integración.
+Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). No es necesario reemplazar XAMPP: se instala PHP 8.3 aparte para Laravel/Composer y se conserva XAMPP para Apache, MySQL y la web anterior. Usa la base nueva `suplementor_laravel`; la base original `suplementor` no se modifica. El JavaScript del sitio ya está preparado para consumir la API Laravel cuando se inicien ambos servidores y se configure el backend.
 
 ## Estructura actual
 
 ```text
 suplementor/
 ├── api.php                 # Punto de entrada de la API
-├── app/
-│   ├── Controllers/
-│   │   └── ApiController.php
-│   └── Models/
-│       ├── ProductModel.php
-│       ├── SaleModel.php
-│       └── UserModel.php
 ├── conexion.php            # Conexión MySQLi
 ├── login.php               # Inicio de sesión usado por el front-end
 ├── cerrar_sesion.php       # Cierre de sesión del panel web
@@ -56,7 +49,10 @@ suplementor/
 ├── script.js               # Interacciones del front-end
 ├── estilo.css              # Estilos y diseño responsive
 ├── base_de_datos.sql       # Esquema de la base de datos original
-├── laravel-backend/        # API Laravel separada, pendiente de instalar en PHP 8.3+
+├── laravel-backend/        # API Laravel 13 integrada con el front-end
+│   ├── app/                # Controladores, middleware y modelos Eloquent
+│   ├── routes/api.php      # Rutas protegidas con Sanctum y permisos
+│   └── database/migrations/# Esquema para suplementor_laravel
 └── docs/
     ├── API.md              # Referencia de endpoints
     ├── ARQUITECTURA.md     # Estructura actual y propuesta de evolución
@@ -65,27 +61,15 @@ suplementor/
 
 ## API
 
-La API actualmente conectada al sitio utiliza `api.php?recurso=...`; los endpoints protegidos necesitan una sesión iniciada. Consulta [docs/API.md](docs/API.md). La API Laravel separada utiliza rutas `/api/...`, tokens bearer Sanctum y está documentada en [`laravel-backend/README.md`](laravel-backend/README.md).
-
-Resumen:
-
-| Recurso | Métodos | Acceso |
-|---|---|---|
-| `auth&accion=login` | POST | Público |
-| `auth&accion=logout` | POST | Sesión iniciada |
-| `usuarios` | GET, POST | Administrador |
-| `productos` | GET | Sesión iniciada |
-| `productos` | POST, PUT, DELETE | Administrador |
-| `inventario&id={id}` | PUT | Administrador |
-| `ventas` | GET, POST | Sesión iniciada |
+La API Laravel ofrece rutas `/api/...` y autenticación bearer Sanctum. El front-end usa esta API para iniciar/cerrar sesión, consultar y administrar productos, actualizar inventario, gestionar usuarios y registrar ventas. Consulta [`laravel-backend/README.md`](laravel-backend/README.md) para la tabla de rutas y el procedimiento de instalación. La API PHP antigua (`api.php`) se conserva como respaldo y no es la que usa el JavaScript actualizado.
 
 ## Seguridad y límites conocidos
 
 - Las consultas de la API usan sentencias preparadas en las operaciones con parámetros.
 - Las contraseñas de usuarios se almacenan con `password_hash()` y se verifican con `password_verify()`.
-- El backend PHP actual autentica con sesiones. El backend Laravel en preparación usa tokens Sanctum.
+- El backend PHP anterior autentica con sesiones. La integración del front-end Laravel utiliza tokens Sanctum guardados temporalmente por pestaña en `sessionStorage`.
 - La configuración incluida es solo para el entorno de desarrollo local. El instalador genera una contraseña aleatoria; no se incluyen credenciales de administrador fijas.
-- El framework Laravel se encuentra en un backend paralelo y aún no reemplaza al backend conectado a la página. La secuencia de migración y las limitaciones están descritas en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
+- Laravel está en una carpeta independiente para no interrumpir el servidor PHP antiguo. Se requiere iniciar también Laravel y configurar su base antes de que las funciones conectadas de la interfaz estén disponibles.
 
 ## Control de versiones
 

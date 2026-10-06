@@ -31,9 +31,13 @@ class ApiTest extends TestCase
             ->assertJsonStructure(["token", "usuario" => ["id", "nombre", "correo"]]);
     }
 
-    public function test_unauthenticated_client_cannot_list_products(): void
+    public function test_unauthenticated_client_cannot_register_a_sale(): void
     {
-        $this->getJson("/api/productos")->assertUnauthorized();
+        $this->postJson("/api/ventas", [
+            "productos" => [
+                ["producto_id" => 1, "cantidad" => 1],
+            ],
+        ])->assertUnauthorized();
     }
 
     public function test_only_administrators_can_create_products(): void

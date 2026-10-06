@@ -19,7 +19,7 @@ La base de datos contiene las tablas `usuarios`, `productos`, `ventas` y `detall
 
 ## Tecnologías y alcance
 
-La aplicación original se implementó con PHP nativo, MySQLi y MySQL, junto con HTML, CSS y JavaScript. Como avance de migración, se preparó una API Laravel 13 independiente en `laravel-backend/`, con Sanctum, controladores, modelos, migraciones y pruebas. La aplicación original se conserva y aún es la que está conectada a la interfaz. Debido a que el entorno disponible tiene PHP 8.0.30 y no Composer, el backend Laravel todavía requiere instalación de dependencias, actualización del entorno, ejecución de migraciones/pruebas e integración con el front-end.
+La interfaz de la aplicación utiliza HTML, CSS y JavaScript. El backend anterior está en PHP nativo con MySQLi. Se preparó en `laravel-backend/` una API Laravel 13 con Sanctum, controladores, modelos Eloquent, migraciones y pruebas. El JavaScript ya consume la API Laravel para autenticación, catálogo, inventario, gestión de usuarios y ventas. El servidor Laravel debe iniciarse por separado y usar la base nueva `suplementor_laravel`. Debido a que el entorno disponible tiene PHP 8.0.30 y no Composer, aún se requiere instalar dependencias y ejecutar migraciones y pruebas para validar la integración en ese entorno.
 
 ## Versionamiento y colaboración
 
@@ -27,4 +27,4 @@ El proyecto está versionado con Git. Antes de entregar, se deben registrar los 
 
 ## Texto sugerido para presentar
 
-> Profesor(a): presentamos el módulo de Suplementor, una aplicación web desarrollada con HTML, CSS, JavaScript, PHP y MySQL. La versión original ofrece autenticación y gestión con PHP nativo. Como avance frente a la recomendación de framework, preparamos en `laravel-backend/` una API independiente con Laravel 13 y Sanctum para autenticación por token, usuarios, productos, inventario y ventas; las ventas validan stock y se registran mediante transacciones. Conservamos el sistema actual mientras actualizamos el entorno a PHP 8.3+ e instalamos Composer. La API Laravel debe completar su instalación, pruebas e integración con el front-end antes de considerarse desplegada. Usamos una base separada para no alterar los datos originales.
+> Profesor(a): presentamos el módulo Suplementor con interfaz HTML, CSS y JavaScript conectada a una API desarrollada con Laravel 13 y Sanctum. La API maneja autenticación por token, consulta y administración de productos, inventario, usuarios y ventas. Las ventas validan la disponibilidad y se registran mediante transacciones. La nueva API utiliza la base separada `suplementor_laravel` para conservar la base original. La configuración del front-end para las rutas Laravel está implementada; para ejecutar y validar todo el flujo en este equipo hace falta PHP 8.3 o superior, Composer, instalar dependencias, migrar la base y correr las pruebas.

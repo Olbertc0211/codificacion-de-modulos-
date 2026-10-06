@@ -57,7 +57,7 @@ Si `where.exe php` muestra `C:\xampp\php\php.exe` antes de `C:\php83\php.exe`, m
    php artisan serve
    ```
 
-7. La API Laravel queda disponible en `http://127.0.0.1:8000/api`. La interfaz antigua permanece en `http://localhost/suplementor/index.html`; todavía no está conectada al nuevo endpoint.
+7. La API Laravel queda disponible en `http://127.0.0.1:8000/api`. Con Apache activo, abre `http://localhost/suplementor/index.html`: el JavaScript ya consume la API Laravel para iniciar sesión, consultar productos, administrar catálogo/inventario/usuarios (rol administrador), ver ventas y registrar compras. Como Apache y Laravel usan puertos distintos, la API incluye CORS local para `localhost` y `127.0.0.1`.
 
 ## Rutas principales
 
@@ -66,8 +66,8 @@ Si `where.exe php` muestra `C:\xampp\php\php.exe` antes de `C:\php83\php.exe`, m
 | `POST` | `/api/auth/login` | Público, límite de 5 intentos por minuto |
 | `POST` | `/api/auth/logout` | Token bearer válido |
 | `GET` | `/api/auth/me` | Token bearer válido |
-| `GET` | `/api/productos` | Token bearer válido |
-| `GET` | `/api/productos/{id}` | Token bearer válido |
+| `GET` | `/api/productos` | Público |
+| `GET` | `/api/productos/{id}` | Público |
 | `POST` | `/api/productos` | Administrador |
 | `PUT` | `/api/productos/{id}` | Administrador |
 | `DELETE` | `/api/productos/{id}` | Administrador; rechaza productos que aparecen en ventas |
@@ -92,7 +92,7 @@ Accept: application/json
 }
 ```
 
-La respuesta contiene un token Sanctum. En las solicitudes protegidas se envía:
+La respuesta contiene un token Sanctum. El front-end lo conserva solo en `sessionStorage` para la pestaña actual. En las solicitudes protegidas envía:
 
 ```http
 Authorization: Bearer TOKEN_RECIBIDO

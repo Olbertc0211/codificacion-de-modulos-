@@ -10,12 +10,13 @@ use Illuminate\Support\Facades\Route;
 Route::post("/auth/login", [AuthController::class, "login"])
     ->middleware("throttle:5,1");
 
+Route::get("/productos", [ProductController::class, "index"]);
+Route::get("/productos/{product}", [ProductController::class, "show"]);
+
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/auth/logout", [AuthController::class, "logout"]);
     Route::get("/auth/me", [AuthController::class, "me"]);
 
-    Route::get("/productos", [ProductController::class, "index"]);
-    Route::get("/productos/{product}", [ProductController::class, "show"]);
     Route::post("/ventas", [SaleController::class, "store"]);
 
     Route::middleware("admin")->group(function (): void {

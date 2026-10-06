@@ -332,6 +332,10 @@ body{
 
 }
 
+.nav a.hidden{
+    display:none;
+}
+
 .nav a:hover{
 
     color:var(--verde);
@@ -521,6 +525,39 @@ body{
     color:#ffb3b3 !important;
     font-size:14px;
     line-height:20px !important;
+}
+
+.api-form{
+    display:grid;
+    gap:12px;
+    margin:18px 0;
+    padding:18px;
+    background:#151515;
+    border:1px solid rgba(0,255,153,.2);
+    border-radius:14px;
+    text-align:left;
+}
+
+.api-form h3{
+    color:var(--verde);
+}
+
+.api-form input,
+.api-form select{
+    display:block;
+    width:100%;
+    margin-top:7px;
+    padding:12px;
+    border:1px solid #383838;
+    border-radius:8px;
+    background:#222;
+    color:white;
+}
+
+.api-message{
+    color:#ffb3b3 !important;
+    overflow-wrap:anywhere;
+    font-size:14px;
 }
 
 .modal-content button{

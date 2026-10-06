@@ -1,8 +1,10 @@
 /*
- * Módulo front-end de Suplementor.
- * Centraliza el estado de la sesión de compra y las vistas modales
- * para mantener una interfaz consistente y fácil de ampliar.
+ * Conecta la interfaz de Suplementor con la API Laravel.
+ * El token permanece solo en sessionStorage y se elimina al cerrar sesión.
  */
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+const TOKEN_KEY = "suplementor-api-token";
+const CART_KEY = "suplementor-carrito";
 
 const elementos = {
     modal: document.getElementById("modal"),
@@ -12,39 +14,35 @@ const elementos = {
     compraModal: document.getElementById("compraModal"),
     usuariosModal: document.getElementById("usuariosModal"),
     reportesModal: document.getElementById("reportesModal"),
-    inicioModal: document.getElementById("inicioModal")
+    inicioModal: document.getElementById("inicioModal"),
+    loginMessage: document.getElementById("loginMessage"),
+    logoutLink: document.getElementById("logoutLink")
 };
 
-const productos = [
-    { nombre: "Proteína Whey", descripcion: "Proteína de rápida absorción.", icono: "fa-glass-water", clase: "whey" },
-    { nombre: "Creatina", descripcion: "Mayor fuerza y potencia.", icono: "fa-bolt", clase: "creatina" },
-    { nombre: "Pre Entreno", descripcion: "Más energía para entrenar.", icono: "fa-fire", clase: "pre" },
-    { nombre: "Hypercalórica", descripcion: "Ideal para aumentar masa.", icono: "fa-burger", clase: "hyper" },
-    { nombre: "BCAA", descripcion: "Aminoácidos esenciales.", icono: "fa-capsules", clase: "bcaa" },
-    { nombre: "Glutamina", descripcion: "Ayuda a la recuperación.", icono: "fa-flask", clase: "glutamina" }
+const iconosProducto = [
+    "fa-glass-water",
+    "fa-bolt",
+    "fa-fire",
+    "fa-burger",
+    "fa-capsules",
+    "fa-flask"
 ];
 
-const marcas = [
-    { nombre: "Optimum Nutrition", icono: "fa-medal" },
-    { nombre: "Rule One", icono: "fa-award" },
-    { nombre: "Dymatize", icono: "fa-shield" },
-    { nombre: "BSN", icono: "fa-star" },
-    { nombre: "MuscleTech", icono: "fa-gem" },
-    { nombre: "Kevin Levrone", icono: "fa-trophy" }
-];
-
-const precioProducto = 100000;
+let usuarioActual = null;
 let carrito = cargarCarrito();
 
-/**
- * Recupera el carrito de la sesión del navegador para no perderlo al cerrar
- * accidentalmente un modal o actualizar la página.
- */
 function cargarCarrito() {
     try {
-        const carritoGuardado = sessionStorage.getItem("suplementor-carrito");
-        const carritoParseado = carritoGuardado ? JSON.parse(carritoGuardado) : [];
-        return Array.isArray(carritoParseado) ? carritoParseado : [];
+        const guardado = sessionStorage.getItem(CART_KEY);
+        const items = guardado ? JSON.parse(guardado) : [];
+        return Array.isArray(items) ? items.filter((item) =>
+            item &&
+            Number.isInteger(item.producto_id) &&
+            typeof item.nombre === "string" &&
+            Number.isFinite(item.precio) &&
+            Number.isInteger(item.cantidad) &&
+            item.cantidad > 0
+        ) : [];
     } catch (error) {
         console.error("No fue posible recuperar el carrito:", error);
         return [];
@@ -52,15 +50,115 @@ function cargarCarrito() {
 }
 
 function guardarCarrito() {
-    sessionStorage.setItem("suplementor-carrito", JSON.stringify(carrito));
+    sessionStorage.setItem(CART_KEY, JSON.stringify(carrito));
     actualizarContadorCarrito();
 }
 
 function actualizarContadorCarrito() {
     const contador = document.getElementById("cartCount");
+    const cantidad = carrito.reduce((total, item) => total + item.cantidad, 0);
+
     if (contador) {
-        const cantidad = carrito.length;
         contador.textContent = `${cantidad} ${cantidad === 1 ? "producto" : "productos"}`;
+    }
+}
+
+function escaparHTML(valor) {
+    return String(valor).replace(/[&<>"']/g, (caracter) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+    })[caracter]);
+}
+
+function mensajeError(error) {
+    if (error.status === 0) {
+        return "No se pudo conectar con Laravel. Verifica PHP 8.3, ejecuta `php artisan serve` en laravel-backend y revisa que Apache esté abierto.";
+    }
+
+    if (error.status === 401) {
+        return "Tu sesión venció. Inicia sesión nuevamente.";
+    }
+
+    if (error.status === 403) {
+        return "Tu usuario no tiene permisos para realizar esta acción.";
+    }
+
+    if (error.status === 422 && error.data && error.data.errors) {
+        return Object.values(error.data.errors).flat().join(" ");
+    }
+
+    return (error.data && error.data.message) || "No fue posible completar la solicitud.";
+}
+
+async function apiRequest(ruta, opciones = {}) {
+    const token = sessionStorage.getItem(TOKEN_KEY);
+    const encabezados = {
+        Accept: "application/json",
+        ...(opciones.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...opciones.headers
+    };
+
+    let respuesta;
+    try {
+        respuesta = await fetch(`${API_BASE_URL}${ruta}`, {
+            ...opciones,
+            headers: encabezados
+        });
+    } catch (error) {
+        const errorAPI = new Error("No se pudo establecer conexión con Laravel.");
+        errorAPI.status = 0;
+        throw errorAPI;
+    }
+
+    const texto = await respuesta.text();
+    let datos = {};
+    if (texto) {
+        try {
+            datos = JSON.parse(texto);
+        } catch (error) {
+            console.error("Laravel devolvió una respuesta no JSON:", error);
+            throw new Error("La API respondió con un formato inesperado.");
+        }
+    }
+
+    if (!respuesta.ok) {
+        const error = new Error(datos.message || `Error HTTP ${respuesta.status}`);
+        error.status = respuesta.status;
+        error.data = datos;
+
+        if (respuesta.status === 401 && ruta !== "/auth/login") {
+            limpiarSesion();
+        }
+
+        throw error;
+    }
+
+    return datos;
+}
+
+function limpiarSesion() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    usuarioActual = null;
+    elementos.logoutLink.classList.add("hidden");
+}
+
+async function restaurarSesion() {
+    if (!sessionStorage.getItem(TOKEN_KEY)) {
+        return;
+    }
+
+    try {
+        const respuesta = await apiRequest("/auth/me");
+        usuarioActual = respuesta.usuario;
+        elementos.logoutLink.classList.remove("hidden");
+    } catch (error) {
+        if (error.status !== 401) {
+            console.error("No fue posible verificar la sesión:", error);
+        }
     }
 }
 
@@ -75,6 +173,7 @@ function cerrarModal() {
 }
 
 function abrirLogin() {
+    elementos.loginMessage.textContent = "";
     elementos.loginModal.classList.remove("hidden");
     document.getElementById("email").focus();
 }
@@ -83,134 +182,265 @@ function cerrarLogin() {
     elementos.loginModal.classList.add("hidden");
 }
 
-/**
- * Envía las credenciales al endpoint PHP y redirige cuando son válidas.
- */
 async function login() {
     const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const mensaje = document.getElementById("loginMessage");
+    const password = document.getElementById("password").value;
     const boton = document.querySelector("#loginForm button[type='submit']");
 
     if (!email || !password) {
-        mensaje.textContent = "Por favor completa todos los campos.";
+        elementos.loginMessage.textContent = "Completa el correo y la contraseña.";
         return;
     }
 
-    mensaje.textContent = "Validando credenciales...";
+    elementos.loginMessage.textContent = "Conectando con Suplementor...";
     boton.disabled = true;
 
-    const datos = new FormData();
-    datos.append("correo", email);
-    datos.append("password", password);
-
     try {
-        const respuesta = await fetch("login.php", { method: "POST", body: datos });
-        if (!respuesta.ok) {
-            throw new Error(`Error HTTP ${respuesta.status}`);
-        }
+        const resultado = await apiRequest("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ correo: email, password })
+        });
 
-        const resultado = (await respuesta.text()).trim();
-        const mensajes = {
-            contraseña: "La contraseña es incorrecta.",
-            usuario: "El correo electrónico no está registrado."
-        };
-
-        if (resultado === "ok") {
-            cerrarLogin();
-            alert("Inicio de sesión exitoso.");
-            window.location.href = "panel.php";
-            return;
-        }
-
-        mensaje.textContent = mensajes[resultado] || "Ocurrió un error al iniciar sesión.";
+        sessionStorage.setItem(TOKEN_KEY, resultado.token);
+        usuarioActual = resultado.usuario;
+        elementos.logoutLink.classList.remove("hidden");
+        elementos.loginMessage.textContent = "";
+        cerrarLogin();
+        alert(`Bienvenido, ${usuarioActual.nombre}.`);
     } catch (error) {
         console.error("No fue posible iniciar sesión:", error);
-        mensaje.textContent = window.location.protocol === "file:"
-            ? "Abre el sistema desde http://localhost/suplementor/index.html, no desde un archivo local."
-            : "No se pudo conectar con el servidor. Verifica que Apache esté encendido.";
+        elementos.loginMessage.textContent = mensajeError(error);
     } finally {
         boton.disabled = false;
     }
 }
 
-function mostrarProductos() {
-    const tarjetas = productos.map((producto) => `
-        <article class="card ${producto.clase}">
-            <i class="fa-solid ${producto.icono}" aria-hidden="true"></i>
-            <h3>${producto.nombre}</h3>
-            <p>${producto.descripcion}</p>
-            <button type="button" onclick="agregarCarrito('${producto.nombre}')">Agregar</button>
-        </article>
-    `).join("");
-
-    abrirModal("Catálogo de Productos", `<div class="cards-grid">${tarjetas}</div>`);
+async function cerrarSesion() {
+    try {
+        await apiRequest("/auth/logout", { method: "POST" });
+    } catch (error) {
+        console.error("No fue posible cerrar la sesión en Laravel:", error);
+    } finally {
+        limpiarSesion();
+        carrito = [];
+        guardarCarrito();
+        alert("Sesión cerrada.");
+    }
 }
 
-function agregarCarrito(nombreProducto) {
-    const producto = productos.find(({ nombre }) => nombre === nombreProducto);
-    if (!producto) {
-        console.error("Producto no encontrado:", nombreProducto);
+function exigirSesionParaCompra() {
+    if (usuarioActual) {
+        return true;
+    }
+
+    abrirLogin();
+    elementos.loginMessage.textContent = "Inicia sesión para agregar productos al carrito.";
+    return false;
+}
+
+function esAdministrador() {
+    return usuarioActual && usuarioActual.rol === "Administrador";
+}
+
+async function mostrarProductos() {
+    abrirModal("Catálogo de productos", "<p>Cargando productos...</p>");
+
+    try {
+        const respuesta = await apiRequest("/productos");
+        const lista = respuesta.datos || [];
+        const formulario = esAdministrador() ? `
+            <form id="productCreateForm" class="api-form">
+                <h3>Agregar producto</h3>
+                <label>Nombre<input name="nombre" maxlength="120" required></label>
+                <label>Descripción<input name="descripcion" maxlength="255" required></label>
+                <label>Precio<input name="precio" type="number" min="0" step="0.01" required></label>
+                <label>Stock inicial<input name="stock" type="number" min="0" step="1" required></label>
+                <button type="submit">Guardar producto</button>
+                <p class="api-message" role="status"></p>
+            </form>` : "";
+
+        const tarjetas = lista.length ? lista.map((producto, indice) => `
+            <article class="card">
+                <i class="fa-solid ${iconosProducto[indice % iconosProducto.length]}" aria-hidden="true"></i>
+                <h3>${escaparHTML(producto.nombre)}</h3>
+                <p>${escaparHTML(producto.descripcion)}</p>
+                <p>${formatearPrecio(Number(producto.precio))} · Stock: ${producto.stock}</p>
+                ${esAdministrador() ? `
+                    <form class="product-edit-form api-form" data-product-id="${producto.id}">
+                        <label>Nombre<input name="nombre" maxlength="120" value="${escaparHTML(producto.nombre)}" required></label>
+                        <label>Descripción<input name="descripcion" maxlength="255" value="${escaparHTML(producto.descripcion)}" required></label>
+                        <label>Precio<input name="precio" type="number" min="0" step="0.01" value="${producto.precio}" required></label>
+                        <label>Stock<input name="stock" type="number" min="0" step="1" value="${producto.stock}" required></label>
+                        <button type="submit">Actualizar</button>
+                        <button type="button" class="btn-close" onclick="eliminarProducto(${producto.id})">Eliminar</button>
+                    </form>` : ""}
+                <button type="button" onclick="agregarCarrito(${producto.id})">Agregar al carrito</button>
+            </article>
+        `).join("") : "<p>Aún no hay productos registrados.</p>";
+
+        elementos.contenidoModal.innerHTML = `${formulario}<div class="cards-grid">${tarjetas}</div>`;
+    } catch (error) {
+        console.error("No fue posible cargar el catálogo:", error);
+        elementos.contenidoModal.innerHTML = `<p class="api-message">${escaparHTML(mensajeError(error))}</p>`;
+    }
+}
+
+async function agregarCarrito(productoId) {
+    if (!exigirSesionParaCompra()) {
         return;
     }
 
-    carrito.push(producto.nombre);
-    guardarCarrito();
-    alert(`${producto.nombre} agregado al carrito correctamente.`);
+    try {
+        const respuesta = await apiRequest(`/productos/${productoId}`);
+        const producto = respuesta.producto;
+        if (producto.stock < 1) {
+            alert("Este producto no tiene unidades disponibles.");
+            return;
+        }
+
+        const enCarrito = carrito.find((item) => item.producto_id === producto.id);
+        if (enCarrito) {
+            if (enCarrito.cantidad >= producto.stock) {
+                alert("No hay suficiente stock para agregar otra unidad.");
+                return;
+            }
+            enCarrito.cantidad += 1;
+        } else {
+            carrito.push({
+                producto_id: producto.id,
+                nombre: producto.nombre,
+                precio: Number(producto.precio),
+                cantidad: 1
+            });
+        }
+
+        guardarCarrito();
+        alert(`${producto.nombre} agregado al carrito.`);
+    } catch (error) {
+        alert(mensajeError(error));
+    }
 }
 
-function mostrarInventario() {
-    const tarjetas = marcas.map((marca) => `
-        <article class="card">
-            <i class="fa-solid ${marca.icono}" aria-hidden="true"></i>
-            <h3>${marca.nombre}</h3>
-            <p>Stock disponible</p>
-        </article>
-    `).join("");
+async function eliminarProducto(productoId) {
+    if (!confirm("¿Deseas eliminar este producto del catálogo?")) {
+        return;
+    }
 
-    abrirModal("Marcas Disponibles", `<div class="cards-grid">${tarjetas}</div>`);
+    try {
+        await apiRequest(`/productos/${productoId}`, { method: "DELETE" });
+        carrito = carrito.filter((item) => item.producto_id !== productoId);
+        guardarCarrito();
+        await mostrarProductos();
+    } catch (error) {
+        alert(mensajeError(error));
+    }
+}
+
+async function mostrarInventario() {
+    abrirModal("Inventario", "<p>Cargando inventario...</p>");
+
+    try {
+        const respuesta = await apiRequest("/productos");
+        const tarjetas = (respuesta.datos || []).map((producto) => `
+            <article class="card">
+                <i class="fa-solid fa-warehouse" aria-hidden="true"></i>
+                <h3>${escaparHTML(producto.nombre)}</h3>
+                <p>Unidades disponibles: <strong>${producto.stock}</strong></p>
+                ${esAdministrador() ? `
+                    <form class="inventory-form api-form" data-product-id="${producto.id}">
+                        <label>Actualizar stock<input name="stock" type="number" min="0" step="1" value="${producto.stock}" required></label>
+                        <button type="submit">Guardar stock</button>
+                        <p class="api-message" role="status"></p>
+                    </form>` : ""}
+            </article>
+        `).join("");
+
+        elementos.contenidoModal.innerHTML = tarjetas || "<p>No hay productos para mostrar.</p>";
+    } catch (error) {
+        elementos.contenidoModal.innerHTML = `<p class="api-message">${escaparHTML(mensajeError(error))}</p>`;
+    }
 }
 
 function mostrarVentas() {
-    if (carrito.length === 0) {
-        abrirModal("Carrito", `
-            <h3>No hay productos agregados.</h3>
-            <p>Agrega un producto desde el catálogo.</p>
-        `);
+    if (!exigirSesionParaCompra()) {
         return;
     }
 
-    const tarjetas = carrito.map((producto, indice) => `
+    if (!carrito.length) {
+        abrirModal("Carrito de compras", "<h3>El carrito está vacío.</h3><p>Agrega productos del catálogo para iniciar tu compra.</p>");
+        return;
+    }
+
+    const tarjetas = carrito.map((producto) => `
         <article class="card">
             <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-            <h3>${producto}</h3>
-            <p>${formatearPrecio(precioProducto)}</p>
-            <button type="button" onclick="eliminarProducto(${indice})">Eliminar</button>
+            <h3>${escaparHTML(producto.nombre)}</h3>
+            <p>${formatearPrecio(producto.precio)} × ${producto.cantidad}</p>
+            <button type="button" onclick="cambiarCantidad(${producto.producto_id}, -1)">−</button>
+            <button type="button" onclick="cambiarCantidad(${producto.producto_id}, 1)">+</button>
+            <button type="button" class="btn-close" onclick="quitarDelCarrito(${producto.producto_id})">Quitar</button>
         </article>
     `).join("");
+    const total = carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
 
-    const total = carrito.length * precioProducto;
-    abrirModal("Carrito de Compras", `
+    abrirModal("Carrito de compras", `
         <div class="cards-grid">${tarjetas}</div>
-        <p class="carrito-total">Total: ${formatearPrecio(total)}</p>
-        <button type="button" onclick="comprar()">Finalizar Compra</button>
+        <p class="carrito-total">Total estimado: ${formatearPrecio(total)}</p>
+        <p>El total definitivo se calcula en el servidor usando los precios y el inventario actuales.</p>
+        <p id="saleMessage" class="api-message" role="status"></p>
+        <button type="button" onclick="comprar()">Confirmar compra</button>
     `);
 }
 
-function eliminarProducto(indice) {
-    if (indice < 0 || indice >= carrito.length) {
+function cambiarCantidad(productoId, cambio) {
+    const producto = carrito.find((item) => item.producto_id === productoId);
+    if (!producto) {
         return;
     }
 
-    carrito.splice(indice, 1);
+    producto.cantidad += cambio;
+    if (producto.cantidad <= 0) {
+        carrito = carrito.filter((item) => item.producto_id !== productoId);
+    }
+
     guardarCarrito();
     mostrarVentas();
 }
 
-function comprar() {
-    carrito = [];
-    cerrarModal();
-    elementos.compraModal.classList.remove("hidden");
+function quitarDelCarrito(productoId) {
+    carrito = carrito.filter((item) => item.producto_id !== productoId);
+    guardarCarrito();
+    mostrarVentas();
+}
+
+async function comprar() {
+    const mensaje = document.getElementById("saleMessage");
+
+    try {
+        const resultado = await apiRequest("/ventas", {
+            method: "POST",
+            body: JSON.stringify({
+                productos: carrito.map(({ producto_id, cantidad }) => ({
+                    producto_id,
+                    cantidad
+                }))
+            })
+        });
+
+        carrito = [];
+        guardarCarrito();
+        cerrarModal();
+        elementos.compraModal.classList.remove("hidden");
+        elementos.compraModal.querySelector("p").innerHTML =
+            `Venta #${resultado.venta.id} registrada correctamente.<br><br>Total pagado: <strong>${formatearPrecio(Number(resultado.venta.total))}</strong>`;
+    } catch (error) {
+        console.error("No fue posible registrar la venta:", error);
+        if (mensaje) {
+            mensaje.textContent = mensajeError(error);
+        } else {
+            alert(mensajeError(error));
+        }
+    }
 }
 
 function cerrarCompra() {
@@ -218,19 +448,90 @@ function cerrarCompra() {
 }
 
 function formatearPrecio(valor) {
-    return `$${valor.toLocaleString("es-CO")}`;
+    return new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0
+    }).format(valor);
 }
 
-function mostrarUsuarios() {
+async function mostrarUsuarios() {
     elementos.usuariosModal.classList.remove("hidden");
+    const lista = elementos.usuariosModal.querySelector(".lista");
+
+    if (!esAdministrador()) {
+        lista.innerHTML = "<p>La gestión de usuarios está disponible solo para administradores.</p>";
+        return;
+    }
+
+    lista.innerHTML = "<p>Cargando usuarios...</p>";
+    try {
+        const respuesta = await apiRequest("/usuarios");
+        const usuarios = respuesta.datos || [];
+        const filas = usuarios.map((usuario) => `
+            <div class="item">
+                <i class="fa-solid fa-user"></i>
+                ${escaparHTML(usuario.nombre)} · ${escaparHTML(usuario.correo)} · ${escaparHTML(usuario.rol)}
+            </div>
+        `).join("");
+
+        lista.innerHTML = `
+            <form id="userCreateForm" class="api-form">
+                <h3>Crear usuario</h3>
+                <label>Nombre<input name="nombre" maxlength="100" required></label>
+                <label>Correo<input name="correo" type="email" maxlength="150" required></label>
+                <label>Contraseña<input name="password" type="password" minlength="8" required></label>
+                <label>Rol
+                    <select name="rol" required>
+                        <option>Cliente</option>
+                        <option>Empleado</option>
+                        <option>Supervisor</option>
+                        <option>Administrador</option>
+                    </select>
+                </label>
+                <button type="submit">Crear usuario</button>
+                <p class="api-message" role="status"></p>
+            </form>
+            <div class="lista">${filas || "<p>No hay usuarios.</p>"}</div>
+        `;
+    } catch (error) {
+        lista.innerHTML = `<p class="api-message">${escaparHTML(mensajeError(error))}</p>`;
+    }
 }
 
 function cerrarUsuarios() {
     elementos.usuariosModal.classList.add("hidden");
 }
 
-function mostrarReportes() {
+async function mostrarReportes() {
     elementos.reportesModal.classList.remove("hidden");
+    const lista = elementos.reportesModal.querySelector(".lista");
+
+    if (!esAdministrador()) {
+        lista.innerHTML = "<p>Los reportes de ventas están disponibles solo para administradores.</p>";
+        return;
+    }
+
+    lista.innerHTML = "<p>Cargando ventas...</p>";
+    try {
+        const respuesta = await apiRequest("/ventas");
+        const ventas = respuesta.datos || [];
+        const total = ventas.reduce((suma, venta) => suma + Number(venta.total), 0);
+        const filas = ventas.map((venta) => `
+            <div class="item">
+                <i class="fa-solid fa-receipt"></i>
+                Venta #${venta.id} · ${escaparHTML(venta.user.nombre)} · ${formatearPrecio(Number(venta.total))} · ${escaparHTML(venta.creado_en)}
+            </div>
+        `).join("");
+
+        lista.innerHTML = `
+            <p>Ventas registradas: <strong>${ventas.length}</strong></p>
+            <p>Total acumulado: <strong>${formatearPrecio(total)}</strong></p>
+            ${filas || "<p>Aún no hay ventas registradas.</p>"}
+        `;
+    } catch (error) {
+        lista.innerHTML = `<p class="api-message">${escaparHTML(mensajeError(error))}</p>`;
+    }
 }
 
 function cerrarReportes() {
@@ -264,7 +565,71 @@ function abrirRedSocial(nombre, url) {
     }
 }
 
-// Permite cerrar cualquier ventana modal con Escape o haciendo clic en su fondo.
+async function manejarFormularioAPI(evento) {
+    const formulario = evento.target;
+    if (!(formulario instanceof HTMLFormElement)) {
+        return;
+    }
+
+    evento.preventDefault();
+    const datos = Object.fromEntries(new FormData(formulario).entries());
+    const mensaje = formulario.querySelector(".api-message");
+    const boton = formulario.querySelector("button[type='submit']");
+    if (boton) {
+        boton.disabled = true;
+    }
+    if (mensaje) {
+        mensaje.textContent = "Guardando...";
+    }
+
+    try {
+        if (formulario.id === "productCreateForm") {
+            await apiRequest("/productos", {
+                method: "POST",
+                body: JSON.stringify({
+                    ...datos,
+                    precio: Number(datos.precio),
+                    stock: Number(datos.stock)
+                })
+            });
+            await mostrarProductos();
+        } else if (formulario.classList.contains("product-edit-form")) {
+            await apiRequest(`/productos/${formulario.dataset.productId}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    ...datos,
+                    precio: Number(datos.precio),
+                    stock: Number(datos.stock)
+                })
+            });
+            await mostrarProductos();
+        } else if (formulario.classList.contains("inventory-form")) {
+            await apiRequest(`/inventario/${formulario.dataset.productId}`, {
+                method: "PUT",
+                body: JSON.stringify({ stock: Number(datos.stock) })
+            });
+            await mostrarInventario();
+        } else if (formulario.id === "userCreateForm") {
+            await apiRequest("/usuarios", {
+                method: "POST",
+                body: JSON.stringify(datos)
+            });
+            await mostrarUsuarios();
+        }
+    } catch (error) {
+        console.error("No fue posible guardar los datos:", error);
+        if (mensaje) {
+            mensaje.textContent = mensajeError(error);
+        } else {
+            alert(mensajeError(error));
+        }
+    } finally {
+        if (boton && boton.isConnected) {
+            boton.disabled = false;
+        }
+    }
+}
+
 document.addEventListener("keydown", (evento) => {
     if (evento.key === "Escape") {
         cerrarModalActivo();
@@ -277,19 +642,24 @@ document.addEventListener("click", (evento) => {
         evento.preventDefault();
     }
 
-    const modales = Object.values(elementos).filter((elemento) =>
-        elemento && elemento.classList && elemento.classList.contains("modal")
-    );
-
+    const modales = [
+        elementos.modal,
+        elementos.loginModal,
+        elementos.compraModal,
+        elementos.usuariosModal,
+        elementos.reportesModal,
+        elementos.inicioModal
+    ];
     if (modales.includes(evento.target)) {
         evento.target.classList.add("hidden");
     }
 });
 
+document.addEventListener("submit", manejarFormularioAPI);
 document.getElementById("loginForm").addEventListener("submit", (evento) => {
     evento.preventDefault();
     login();
 });
 
-// El contador se sincroniza al cargar la vista con el estado de la sesión.
 actualizarContadorCarrito();
+restaurarSesion();
