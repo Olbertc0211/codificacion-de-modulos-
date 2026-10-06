@@ -1,4 +1,6 @@
-# API REST de Suplementor
+# API REST nativa de Suplementor
+
+> Esta referencia corresponde a `api.php` en la raíz, que sigue atendiendo la interfaz actual. La nueva API Laravel paralela usa tokens bearer y sus rutas están en [`laravel-backend/README.md`](../laravel-backend/README.md).
 
 ## Información general
 

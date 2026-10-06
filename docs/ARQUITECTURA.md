@@ -16,7 +16,7 @@ api.php / login.php / panel.php
 MySQL: usuarios, productos, ventas, detalle_ventas
 ```
 
-La API está organizada en una separación MVC nativa básica:
+La API nativa existente está organizada en una separación MVC básica:
 
 - `api.php` inicializa sesión, conexión y dependencias.
 - `app/Controllers/ApiController.php` recibe solicitudes, valida datos y construye respuestas HTTP/JSON.
@@ -24,46 +24,17 @@ La API está organizada en una separación MVC nativa básica:
 - `conexion.php` configura la conexión MySQLi.
 - `index.html`, `panel.php` y sus recursos conforman las vistas/interfaz del sistema.
 
-La solución está construida en PHP nativo y no utiliza un framework. Esta organización aplica separación de responsabilidades a la API, pero no equivale a una migración a Laravel ni a una arquitectura empresarial completa.
+La aplicación original está construida en PHP nativo y no utiliza un framework.
 
-## Posible evolución con framework
+## Backend Laravel paralelo
 
-Si el equipo requiere adoptar un framework, puede migrarse gradualmente a una estructura como:
+Se preparó `laravel-backend/` como una aplicación independiente con Laravel 13, Sanctum, controladores, modelos Eloquent, migraciones y pruebas de características. Implementa autenticación bearer, usuarios, productos, inventario y ventas. Se conserva el backend nativo y la interfaz existente mientras se actualiza el entorno.
 
-```text
-app/
-├── Controllers/
-│   ├── AuthController.php
-│   ├── UserController.php
-│   ├── ProductController.php
-│   ├── InventoryController.php
-│   └── SaleController.php
-├── Models/
-│   ├── User.php
-│   ├── Product.php
-│   └── Sale.php
-├── Services/
-│   └── SaleService.php
-└── Support/
-    ├── JsonResponse.php
-    └── Validator.php
-config/
-└── database.php
-routes/
-└── api.php
-public/
-└── index.php
-```
+Este backend paralelo todavía no está instalado ni ejecutado: el equipo disponible tenía PHP 8.0.30 y no se detectó Composer, mientras que `composer.json` requiere PHP 8.3 o posterior. Tras actualizar PHP e instalar Composer hay que instalar dependencias, configurar una base separada, ejecutar las migraciones y pruebas, y luego planificar la integración del front-end. La base original `suplementor` no se usa para las migraciones Laravel.
 
-Responsabilidades sugeridas:
+## Posible evolución tras validar Laravel
 
-- **Rutas:** relacionar método y URL con el controlador correspondiente.
-- **Controladores:** validar la solicitud y coordinar la respuesta HTTP.
-- **Modelos:** encapsular el acceso a las tablas.
-- **Servicios:** reunir reglas de negocio que involucren varias operaciones, como validar stock y registrar una venta.
-- **Configuración:** centralizar la conexión y no publicar credenciales.
-
-Esta estructura es una propuesta de evolución; todavía no está implementada. La adopción de Laravel requiere una migración aparte, instalación de Composer y cambios de configuración y despliegue.
+Una vez que la API Laravel separada esté ejecutada y validada, se puede integrar la interfaz existente y migrar los datos, con respaldo previo. No se deben retirar los endpoints PHP antiguos antes de completar esa comprobación.
 
 ## Convenciones aplicadas en la documentación de esta entrega
 
@@ -75,7 +46,7 @@ Esta estructura es una propuesta de evolución; todavía no está implementada. 
 
 ## Trabajo grupal y versionamiento
 
-El repositorio local está inicializado, pero todavía no tiene commits. Antes de entregar, debe registrarse el estado del proyecto con un commit y cada integrante debe documentar únicamente su aporte real. El grupo puede completar esta tabla con información verificada:
+Cada integrante debe documentar únicamente su aporte real en commits y completar esta tabla con información verificada:
 
 | Integrante | Aporte realizado | Evidencia (commit, archivo o actividad) |
 |---|---|---|

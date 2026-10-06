@@ -1,8 +1,8 @@
 # Suplementor
 
-Aplicación web académica para consultar suplementos deportivos, iniciar sesión y administrar productos, inventario y ventas. El proyecto utiliza HTML, CSS y JavaScript en el front-end, y PHP con MySQL en el servidor.
+Aplicación web académica para consultar suplementos deportivos, iniciar sesión y administrar productos, inventario y ventas. La interfaz existente utiliza PHP nativo/MySQL; se añadió un backend Laravel independiente para preparar la migración.
 
-> **Estado técnico:** el backend está implementado en PHP nativo, sin un framework. La API REST utiliza una separación MVC básica: `ApiController` recibe y valida solicitudes, y los modelos gestionan el acceso a datos. Esta organización no equivale a una migración a Laravel.
+> **Estado de migración:** la aplicación original continúa funcionando con su backend PHP nativo. El nuevo backend Laravel está aislado en [`laravel-backend/`](laravel-backend/README.md), conserva la aplicación anterior y no está conectado todavía a la interfaz. Laravel requiere PHP 8.3+ y Composer; el entorno detectado tenía PHP 8.0.30 y no tenía Composer, por lo que las dependencias y pruebas quedan pendientes de instalar y ejecutar tras actualizar el entorno.
 
 ## Tecnologías
 
@@ -11,6 +11,7 @@ Aplicación web académica para consultar suplementos deportivos, iniciar sesió
 - MySQL/MariaDB.
 - XAMPP para desarrollo local.
 - Git para control de versiones.
+- Laravel 13 / Sanctum para el backend nuevo (PHP 8.3+ y Composer).
 
 ## Requisitos
 
@@ -29,6 +30,10 @@ Aplicación web académica para consultar suplementos deportivos, iniciar sesió
 7. Abre la aplicación en `http://localhost/suplementor/index.html`. No abras `index.html` directamente desde el explorador de archivos, porque PHP requiere Apache.
 
 El instalador solo acepta solicitudes locales y no crea otro administrador si ya existe uno. Elimina o deshabilita `crear_usuario.php` después de su uso.
+
+## Backend Laravel en preparación
+
+Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). Usa una base nueva llamada `suplementor_laravel`; la base `suplementor` y el sitio anterior no se modifican. La interfaz actual sigue utilizando sus endpoints PHP nativos hasta que se complete y pruebe una fase posterior de integración.
 
 ## Estructura actual
 
@@ -51,6 +56,7 @@ suplementor/
 ├── script.js               # Interacciones del front-end
 ├── estilo.css              # Estilos y diseño responsive
 ├── suplementor.sql         # Esquema de base de datos
+├── laravel-backend/        # API Laravel separada, pendiente de instalar en PHP 8.3+
 └── docs/
     ├── API.md              # Referencia de endpoints
     ├── ARQUITECTURA.md     # Estructura actual y propuesta de evolución
@@ -59,7 +65,7 @@ suplementor/
 
 ## API
 
-La API utiliza `api.php?recurso=...`; los endpoints protegidos necesitan una sesión iniciada. Consulta [docs/API.md](docs/API.md) para ver métodos, permisos, cuerpos JSON y ejemplos.
+La API actualmente conectada al sitio utiliza `api.php?recurso=...`; los endpoints protegidos necesitan una sesión iniciada. Consulta [docs/API.md](docs/API.md). La API Laravel separada utiliza rutas `/api/...`, tokens bearer Sanctum y está documentada en [`laravel-backend/README.md`](laravel-backend/README.md).
 
 Resumen:
 
@@ -77,17 +83,17 @@ Resumen:
 
 - Las consultas de la API usan sentencias preparadas en las operaciones con parámetros.
 - Las contraseñas de usuarios se almacenan con `password_hash()` y se verifican con `password_verify()`.
-- La autenticación de la API usa sesiones PHP; el cliente debe conservar y enviar la cookie de sesión entre solicitudes.
+- El backend PHP actual autentica con sesiones. El backend Laravel en preparación usa tokens Sanctum.
 - La configuración incluida es solo para el entorno de desarrollo local. El instalador genera una contraseña aleatoria; no se incluyen credenciales de administrador fijas.
-- El backend no utiliza un framework. La API está separada en un controlador y modelos; las vistas del sitio se mantienen en los archivos de front-end y PHP existentes. La evolución propuesta está descrita en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
+- El framework Laravel se encuentra en un backend paralelo y aún no reemplaza al backend conectado a la página. La secuencia de migración y las limitaciones están descritas en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
 
 ## Control de versiones
 
-El repositorio local está inicializado, pero aún no contiene commits. Después de revisar los archivos y confirmar que no incluyan contraseñas reales, registra el proyecto:
+El proyecto está versionado con Git. Después de revisar los archivos modificados y confirmar que no incluyan secretos, registra los cambios:
 
 ```powershell
 git add .
-git commit -m "Organiza la API y documenta Suplementor"
+git commit -m "Prepara backend Laravel para Suplementor"
 ```
 
 Cada integrante debe registrar únicamente los cambios que haya realizado. No se debe atribuir trabajo a otra persona ni compartir credenciales reales en el repositorio.
