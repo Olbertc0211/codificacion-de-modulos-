@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Suplementor</title>
+
+    <link rel="stylesheet" href="estilo.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<!--=====================================
+                HERO
+======================================-->
+
+<section class="hero">
+
+    <div class="overlay"></div>
+
+    <!--================ HEADER ================-->
+
+    <header class="header">
+
+        <div class="logo-box">
+
+            <img src="img/logo.png" class="logo" alt="Logotipo de Suplementor">
+
+            <h1>SUPLEMENTOR</h1>
+
+        </div>
+
+    </header>
+
+    <!--================ CONTENIDO ================-->
+
+    <div class="hero-content">
+
+        <span class="subtitulo">
+
+            BIENVENIDO A SUPLEMENTOR
+
+        </span>
+
+        <h2>
+
+            Gestión de<br>
+
+            Suplementos Deportivos
+
+        </h2>
+
+        <p>
+
+            Administra productos, inventario, usuarios y ventas
+            desde un solo lugar de forma rápida, moderna y segura.
+
+        </p>
+
+        <button type="button" class="btn" onclick="abrirLogin()">
+
+            Ingresar al Sistema
+
+        </button>
+
+    </div>
+
+    <!--================ TARJETAS ================-->
+
+    <div class="grid-overlay">
+
+        <div class="box" role="button" tabindex="0" onclick="mostrarProductos()" onkeydown="if(event.key === 'Enter' || event.key === ' ') mostrarProductos()">
+
+            <i class="fa-solid fa-box-open icon"></i>
+
+            <div>
+
+                <h3>Productos</h3>
+
+                <p>
+
+                    Consulta todas las categorías de suplementos.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="box" role="button" tabindex="0" onclick="mostrarInventario()" onkeydown="if(event.key === 'Enter' || event.key === ' ') mostrarInventario()">
+
+            <i class="fa-solid fa-warehouse icon"></i>
+
+            <div>
+
+                <h3>Inventario</h3>
+
+                <p>
+
+                    Consulta las marcas disponibles.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="box" role="button" tabindex="0" onclick="mostrarVentas()" onkeydown="if(event.key === 'Enter' || event.key === ' ') mostrarVentas()">
+
+            <i class="fa-solid fa-cart-shopping icon"></i>
+
+            <div>
+
+                <h3>Ventas</h3>
+
+                <p>
+                    Revisa el carrito y realiza la compra.
+                </p>
+                <span id="cartCount" class="cart-count" aria-live="polite">0 productos</span>
+
+            </div>
+
+        </div>
+
+    </div>
+<div class="redes">
+
+    <h3>Síguenos en:</h3>
+
+    <div class="redes-iconos">
+
+        <a href="#" onclick="abrirRedSocial('WhatsApp','https://www.whatsapp.com')">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+
+        <a href="#" onclick="abrirRedSocial('Instagram','https://www.instagram.com')">
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+
+        <a href="#" onclick="abrirRedSocial('TikTok','https://www.tiktok.com')">
+            <i class="fa-brands fa-tiktok"></i>
+        </a>
+
+        <a href="#" onclick="abrirRedSocial('YouTube','https://www.youtube.com')">
+            <i class="fa-brands fa-youtube"></i>
+        </a>
+
+        <a href="#" onclick="abrirRedSocial('Facebook','https://www.facebook.com')">
+            <i class="fa-brands fa-facebook"></i>
+        </a>
+
+        <a href="#" onclick="abrirRedSocial('X','https://x.com')">
+            <i class="fa-brands fa-x-twitter"></i>
+        </a>
+
+    </div>
+
+</div>
+    <!--================ MENU ================-->
+
+    <nav class="nav">
+
+        <a href="#" onclick="mostrarInicio()">
+
+            <i class="fa-solid fa-house"></i>
+
+            Inicio
+
+        </a>
+
+        <a href="#" onclick="mostrarUsuarios()">
+
+            <i class="fa-solid fa-users"></i>
+
+            Usuarios
+
+        </a>
+
+        <a href="#" onclick="mostrarReportes()">
+
+            <i class="fa-solid fa-chart-column"></i>
+
+            Reportes
+
+        </a>
+
+    </nav>
+
+</section>
+
+<!--=====================================
+          MODAL PRINCIPAL
+======================================-->
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="tituloModal">
+
+    <div class="modal-content grande">
+
+        <button type="button" class="cerrar" aria-label="Cerrar catálogo" onclick="cerrarModal()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <h2 id="tituloModal">
+
+            Suplementor
+
+        </h2>
+
+        <div id="contenidoModal">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=====================================
+          MODAL LOGIN
+======================================-->
+
+<div id="loginModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="tituloLogin">
+
+    <div class="modal-content">
+
+        <i class="fa-solid fa-user-lock login-icon"></i>
+
+        <h2 id="tituloLogin">
+
+            Iniciar Sesión
+
+        </h2>
+
+        <form id="loginForm">
+            <label for="email">Correo electrónico</label>
+            <input
+                type="email"
+                id="email"
+                name="correo"
+                autocomplete="email"
+                placeholder="Correo electrónico"
+                required>
+
+            <label for="password">Contraseña</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Contraseña"
+                required>
+
+            <p id="loginMessage" class="form-message" role="alert" aria-live="assertive"></p>
+
+            <button type="submit">
+
+            Ingresar
+
+            </button>
+        </form>
+
+        <button
+            type="button"
+            class="btn-close"
+            onclick="cerrarLogin()">
+
+            Cancelar
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Aquí continúa la Parte 2 -->
+ <!--=====================================
+        MODAL COMPRA EXITOSA
+======================================-->
+
+<div id="compraModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <i class="fa-solid fa-circle-check compra-icon"></i>
+
+        <h2>¡Compra Exitosa!</h2>
+
+        <p>
+
+            🎉 Felicidades por tu compra.
+
+            <br><br>
+
+            Gracias por confiar en <strong>Suplementor</strong>.
+
+        </p>
+
+        <button type="button" onclick="cerrarCompra()">
+
+            Aceptar
+
+        </button>
+
+    </div>
+
+</div>
+
+<!--=====================================
+        MODAL USUARIOS
+======================================-->
+
+<div id="usuariosModal" class="modal hidden">
+
+    <div class="modal-content grande">
+
+        <button type="button" class="cerrar" onclick="cerrarUsuarios()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <h2>
+
+            Gestión de Usuarios
+
+        </h2>
+
+        <div class="lista">
+
+            <div class="item">
+                <i class="fa-solid fa-user-shield"></i>
+                Administrador
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-user-tie"></i>
+                Empleado
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-user"></i>
+                Cliente
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-user-gear"></i>
+                Supervisor
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=====================================
+        MODAL REPORTES
+======================================-->
+
+<div id="reportesModal" class="modal hidden">
+
+    <div class="modal-content grande">
+
+        <button type="button" class="cerrar" onclick="cerrarReportes()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <h2>
+
+            Reportes
+
+        </h2>
+
+        <div class="lista">
+
+            <div class="item">
+                <i class="fa-solid fa-chart-line"></i>
+                Reporte de Ventas
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Reporte de Inventario
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-box-open"></i>
+                Productos más vendidos
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-users"></i>
+                Reporte de Clientes
+            </div>
+
+            <div class="item">
+                <i class="fa-solid fa-dollar-sign"></i>
+                Ganancias del Mes
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=====================================
+        MODAL INICIO
+======================================-->
+
+<div id="inicioModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <i class="fa-solid fa-house"></i>
+
+        <h2>Bienvenido</h2>
+
+        <p>
+
+            Estás en el panel principal de Suplementor.
+
+            Desde aquí podrás administrar:
+
+        </p>
+
+        <br>
+
+        <ul>
+
+            <li>Productos</li>
+
+            <li>Inventario</li>
+
+            <li>Ventas</li>
+
+            <li>Usuarios</li>
+
+            <li>Reportes</li>
+
+        </ul>
+
+        <br>
+
+        <button type="button" onclick="cerrarInicio()">
+
+            Cerrar
+
+        </button>
+
+    </div>
+
+</div>
+
+<!--=====================================
+        SCRIPT
+======================================-->
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

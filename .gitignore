@@ -1,0 +1,11 @@
+# Archivos generados por el entorno local
+*.log
+
+# Configuración local que puede contener credenciales
+.env
+
+# Archivos temporales de editores y del sistema operativo
+.vscode/*
+!.vscode/extensions.json
+Thumbs.db
+Desktop.ini
