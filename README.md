@@ -24,7 +24,7 @@ Aplicación web académica para consultar suplementos deportivos, iniciar sesió
 1. Copia la carpeta del proyecto en `C:\xampp\htdocs\suplementor`.
 2. Abre el panel de XAMPP e inicia **Apache** y **MySQL**.
 3. Abre `http://localhost/phpmyadmin`.
-4. Importa el archivo `suplementor.sql`. El script crea la base `suplementor` y las tablas `usuarios`, `productos`, `ventas` y `detalle_ventas`.
+4. Importa el archivo `base_de_datos.sql`. El script crea la base `suplementor` y las tablas `usuarios`, `productos`, `ventas` y `detalle_ventas`.
 5. Revisa los parámetros de conexión en `conexion.php`. La configuración incluida corresponde a XAMPP local (`localhost`, usuario `root`, contraseña vacía).
 6. Si todavía no existe un administrador, abre `http://localhost/suplementor/crear_usuario.php` desde el mismo equipo. El instalador crea `admin@localhost`, genera una contraseña aleatoria y la muestra una sola vez. Guárdala de forma segura; el instalador no puede recuperarla.
 7. Abre la aplicación en `http://localhost/suplementor/index.html`. No abras `index.html` directamente desde el explorador de archivos, porque PHP requiere Apache.
@@ -33,7 +33,7 @@ El instalador solo acepta solicitudes locales y no crea otro administrador si ya
 
 ## Backend Laravel en preparación
 
-Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). Usa una base nueva llamada `suplementor_laravel`; la base `suplementor` y el sitio anterior no se modifican. La interfaz actual sigue utilizando sus endpoints PHP nativos hasta que se complete y pruebe una fase posterior de integración.
+Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). No es necesario reemplazar XAMPP: se instala PHP 8.3 aparte para Laravel/Composer y se conserva XAMPP para el sitio anterior y MySQL. Usa la base nueva `suplementor_laravel`; la base `suplementor` y el sitio anterior no se modifican. La interfaz actual sigue utilizando sus endpoints PHP nativos hasta completar y probar una fase posterior de integración.
 
 ## Estructura actual
 
@@ -55,7 +55,7 @@ suplementor/
 ├── index.html              # Interfaz pública
 ├── script.js               # Interacciones del front-end
 ├── estilo.css              # Estilos y diseño responsive
-├── suplementor.sql         # Esquema de base de datos
+├── base_de_datos.sql       # Esquema de la base de datos original
 ├── laravel-backend/        # API Laravel separada, pendiente de instalar en PHP 8.3+
 └── docs/
     ├── API.md              # Referencia de endpoints

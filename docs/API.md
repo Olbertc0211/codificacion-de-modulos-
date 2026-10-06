@@ -146,7 +146,7 @@ La API consulta los precios actuales en la base de datos, comprueba el stock, re
 ## Prueba manual en XAMPP
 
 1. Inicia Apache y MySQL.
-2. Importa `suplementor.sql` en phpMyAdmin.
+2. Importa `base_de_datos.sql` en phpMyAdmin.
 3. Inicia sesión para obtener la cookie de sesión.
 4. Envía solicitudes a `http://localhost/suplementor/api.php` usando una herramienta que permita especificar método, JSON y cookies (por ejemplo, Postman).
 
