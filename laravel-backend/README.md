@@ -4,7 +4,7 @@ Este es el backend nuevo desarrollado con Laravel 13 y Sanctum. Es un proyecto s
 
 ## Requisitos
 
-- PHP 8.3 o posterior con `pdo_mysql`, `pdo_sqlite` (para pruebas), `mbstring`, `openssl`, `fileinfo`, `tokenizer`, `xml`, `ctype` y `curl` habilitados.
+- PHP 8.3 o posterior con `pdo_mysql`, `pdo_sqlite` (para pruebas), `mbstring`, `openssl`, `fileinfo`, `tokenizer`, `xml`, `dom`, `ctype`, `curl` y `zip` habilitados.
 - Composer 2.
 - MySQL/MariaDB (XAMPP puede usarse como servidor de base de datos).
 
@@ -25,7 +25,7 @@ El XAMPP detectado tiene PHP 8.0.30. No es necesario reemplazarlo para usar Lara
    php -m
    ```
 
-   `php -v` debe indicar 8.3 o superior y `php -m` debe incluir, entre otras, `pdo_mysql`, `pdo_sqlite`, `mbstring` y `openssl`.
+   `php -v` debe indicar 8.3 o superior y `php -m` debe incluir `pdo`, `pdo_mysql`, `pdo_sqlite`, `mbstring`, `openssl`, `dom` y `zip`.
 7. Instala Composer 2 desde [getcomposer.org/download](https://getcomposer.org/download/). Durante la instalación, selecciona `C:\php83\php.exe` como ejecutable de PHP. Abre una ventana nueva de PowerShell y valida:
 
    ```powershell
@@ -37,27 +37,32 @@ Si `where.exe php` muestra `C:\xampp\php\php.exe` antes de `C:\php83\php.exe`, m
 ## Instalar y ejecutar Laravel
 
 1. Inicia MySQL desde XAMPP. Conserva el backend anterior en la raíz del proyecto; no copies la carpeta pública de Laravel encima de `C:\xampp\htdocs\suplementor`.
-2. En phpMyAdmin, crea una base de datos vacía llamada `suplementor_laravel`, con cotejamiento `utf8mb4_unicode_ci`. No uses la base antigua `suplementor`: las migraciones Laravel deben crear tablas independientes y preservar los datos existentes.
+2. En phpMyAdmin, crea una base de datos vacía llamada `suplementor_laravel`, con cotejamiento `utf8mb4_unicode_ci`. No uses la base antigua `suplementor`: el instalador fija `DB_DATABASE=suplementor_laravel` y las migraciones deben preservar los datos existentes.
 3. Abre PowerShell dentro de `C:\xampp\htdocs\suplementor\laravel-backend`.
-4. Instala las dependencias y crea la configuración local:
+4. Ejecuta el instalador guiado:
 
    ```powershell
-   composer install
-   Copy-Item .env.example .env
+   .\scripts\Install-Suplementor.ps1
    ```
 
-5. Edita `.env`: configura `DB_DATABASE=suplementor_laravel`, el usuario y contraseña MySQL locales, y `SUPLEMENTOR_ADMIN_EMAIL` y `SUPLEMENTOR_ADMIN_PASSWORD` con credenciales nuevas. No compartas ni subas este archivo.
-6. Ejecuta:
+   Si PowerShell bloquea scripts locales, usa:
 
    ```powershell
-   php artisan key:generate
-   php artisan migrate --seed
-   php artisan route:list --path=api
-   php artisan test
+   powershell -ExecutionPolicy Bypass -File .\scripts\Install-Suplementor.ps1
+   ```
+
+   El instalador comprueba PHP y extensiones, Composer, instala dependencias, pregunta el correo del administrador y las credenciales locales de MySQL, genera una contraseña administrativa aleatoria y configura `.env`. Luego aplica migraciones y seed, lista rutas y ejecuta pruebas. Confirma que `suplementor_laravel` esté vacía; el instalador no cambia el nombre de la base configurada.
+
+5. Al finalizar, copia y guarda la contraseña que muestra el instalador. No se puede volver a mostrar y el `.env` no se sube a Git.
+6. Con XAMPP (Apache y MySQL) iniciado, abre una segunda terminal en `laravel-backend` y ejecuta:
+
+   ```powershell
    php artisan serve
    ```
 
-7. La API Laravel queda disponible en `http://127.0.0.1:8000/api`. Con Apache activo, abre `http://localhost/suplementor/index.html`: el JavaScript ya consume la API Laravel para iniciar sesión, consultar productos, administrar catálogo/inventario/usuarios (rol administrador), ver ventas y registrar compras. Como Apache y Laravel usan puertos distintos, la API incluye CORS local para `localhost` y `127.0.0.1`.
+7. Deja esa terminal abierta. La API Laravel queda disponible en `http://127.0.0.1:8000/api`. Entra a `http://localhost/suplementor/index.html`: el JavaScript consume la API Laravel para iniciar sesión, consultar productos, administrar catálogo/inventario/usuarios (rol administrador), ver ventas y registrar compras. Como Apache y Laravel usan puertos distintos, la API incluye CORS local para `localhost` y `127.0.0.1`.
+
+Para volver a ejecutar el sistema otro día, basta con iniciar Apache y MySQL desde XAMPP y, en `laravel-backend`, ejecutar `php artisan serve`. No vuelvas a correr migraciones ni el instalador si la base ya está configurada.
 
 ## Rutas principales
 

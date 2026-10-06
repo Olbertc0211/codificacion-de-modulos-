@@ -570,6 +570,9 @@ async function manejarFormularioAPI(evento) {
     if (!(formulario instanceof HTMLFormElement)) {
         return;
     }
+    if (formulario.id === "loginForm") {
+        return;
+    }
 
     evento.preventDefault();
     const datos = Object.fromEntries(new FormData(formulario).entries());

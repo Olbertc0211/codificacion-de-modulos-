@@ -1,8 +1,8 @@
 # Suplementor
 
-Aplicación web académica para consultar suplementos deportivos, iniciar sesión y administrar productos, inventario y ventas. La interfaz existente utiliza PHP nativo/MySQL; se añadió un backend Laravel independiente para preparar la migración.
+Aplicación web académica para consultar suplementos deportivos, iniciar sesión y administrar productos, inventario y ventas. El front-end se conecta a una API desarrollada con Laravel 13 y Sanctum; el backend PHP original se conserva como respaldo.
 
-> **Estado de migración:** la aplicación original continúa funcionando con su backend PHP nativo. El nuevo backend Laravel está aislado en [`laravel-backend/`](laravel-backend/README.md), conserva la aplicación anterior y no está conectado todavía a la interfaz. Laravel requiere PHP 8.3+ y Composer; el entorno detectado tenía PHP 8.0.30 y no tenía Composer, por lo que las dependencias y pruebas quedan pendientes de instalar y ejecutar tras actualizar el entorno.
+> **Para ejecutar el proyecto:** Laravel necesita PHP 8.3+ y Composer 2. El XAMPP de este equipo contiene PHP 8.0.30, así que instala PHP 8.3 por separado y conserva XAMPP para Apache y MySQL. El instalador guiado crea la configuración local, ejecuta las migraciones y pruebas; consulta [`laravel-backend/README.md`](laravel-backend/README.md).
 
 ## Tecnologías
 
@@ -31,9 +31,9 @@ Aplicación web académica para consultar suplementos deportivos, iniciar sesió
 
 El instalador solo acepta solicitudes locales y no crea otro administrador si ya existe uno. Elimina o deshabilita `crear_usuario.php` después de su uso.
 
-## Backend Laravel en preparación
+## Preparar y ejecutar Laravel
 
-Para configurar la API Laravel separada, sigue [`laravel-backend/README.md`](laravel-backend/README.md). No es necesario reemplazar XAMPP: se instala PHP 8.3 aparte para Laravel/Composer y se conserva XAMPP para Apache, MySQL y la web anterior. Usa la base nueva `suplementor_laravel`; la base original `suplementor` no se modifica. El JavaScript del sitio ya está preparado para consumir la API Laravel cuando se inicien ambos servidores y se configure el backend.
+Sigue [`laravel-backend/README.md`](laravel-backend/README.md): instala PHP 8.3 y Composer, crea `suplementor_laravel`, ejecuta `scripts/Install-Suplementor.ps1` y arranca Laravel con `php artisan serve`. Inicia Apache y MySQL desde XAMPP y abre `http://localhost/suplementor/index.html`. El JavaScript de la interfaz consume Laravel; la base original `suplementor` se conserva sin cambios.
 
 ## Estructura actual
 
@@ -49,10 +49,11 @@ suplementor/
 ├── script.js               # Interacciones del front-end
 ├── estilo.css              # Estilos y diseño responsive
 ├── base_de_datos.sql       # Esquema de la base de datos original
-├── laravel-backend/        # API Laravel 13 integrada con el front-end
+├── laravel-backend/        # API Laravel 13 conectada con el front-end
 │   ├── app/                # Controladores, middleware y modelos Eloquent
 │   ├── routes/api.php      # Rutas protegidas con Sanctum y permisos
 │   └── database/migrations/# Esquema para suplementor_laravel
+│   └── scripts/            # Instalador guiado para Windows
 └── docs/
     ├── API.md              # Referencia de endpoints
     ├── ARQUITECTURA.md     # Estructura actual y propuesta de evolución
