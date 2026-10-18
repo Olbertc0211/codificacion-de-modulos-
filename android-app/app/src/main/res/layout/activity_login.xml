@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="#121212">
+
+    <!-- El nombre solo se solicita al registrarse. -->
+    <EditText
+        android:id="@+id/etNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre (solo para registro)"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#9DFF00" />
+
+    <!-- Correo usado tanto para crear la cuenta como para iniciar sesión. -->
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Correo electrónico"
+        android:inputType="textEmailAddress"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#9DFF00"
+        android:layout_marginTop="16dp" />
+
+    <!-- La entrada oculta el texto para proteger la contraseña en pantalla. -->
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:textColorHint="#888888"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#9DFF00"
+        android:layout_marginTop="16dp" />
+
+    <!-- Envía los tres campos al endpoint registro.php. -->
+    <Button
+        android:id="@+id/btnRegistrar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="REGISTRAR"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:backgroundTint="#9DFF00"
+        android:textColor="#000000"
+        android:layout_marginTop="24dp" />
+
+    <!-- Envía correo y contraseña al endpoint login.php. -->
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="INICIAR SESIÓN"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:backgroundTint="#000000"
+        android:textColor="#9DFF00"
+        android:layout_marginTop="12dp" />
+
+    <!-- Muestra confirmaciones, validaciones y errores de conexión. -->
+    <TextView
+        android:id="@+id/tvResultado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>

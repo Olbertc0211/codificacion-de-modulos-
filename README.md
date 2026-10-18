@@ -36,6 +36,10 @@ Este backend se conserva como respaldo. El front-end principal usa la API Larave
 
 Sigue [`laravel-backend/README.md`](laravel-backend/README.md): instala PHP 8.3+ y Composer, crea `suplementor_laravel` desde MySQL Workbench, ejecuta `scripts/Install-Suplementor.ps1` y arranca Laravel con `php artisan serve`. Inicia Apache y MySQL desde XAMPP y abre `http://localhost/suplementor/index.html`. La base original `suplementor` no se modifica. No se necesita phpMyAdmin.
 
+## Aplicación móvil Android
+
+El proyecto Android está en [`android-app/`](android-app/README.md) y la API PHP que utiliza está en [`mobile-api/`](mobile-api/README.md). Consulta sus guías para crear la base móvil, configurar la IP local del servidor XAMPP y compilar la aplicación desde Android Studio o con Gradle.
+
 ## Estructura actual
 
 ```text
@@ -55,6 +59,8 @@ suplementor/
 │   ├── routes/api.php      # Rutas protegidas con Sanctum y permisos
 │   └── database/migrations/# Esquema para suplementor_laravel
 │   └── scripts/            # Instalador guiado para Windows
+├── android-app/             # Aplicación Android nativa y calculadora de IMC
+├── mobile-api/              # API PHP para registro e inicio de sesión Android
 └── docs/
     ├── API.md              # Referencia de endpoints
     ├── ARQUITECTURA.md     # Estructura actual y propuesta de evolución

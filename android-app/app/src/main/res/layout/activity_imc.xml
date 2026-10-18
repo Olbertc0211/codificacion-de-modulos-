@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    android:fillViewport="true">
+
+    <!-- Permite desplazar el formulario en pantallas pequeñas o apaisadas. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Marca visual de la aplicación. -->
+        <ImageView
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/logo" />
+
+        <!-- Encabezado principal de la calculadora. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="@string/imc_title"
+            android:textColor="#9DFF00"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Saludo personalizado con el nombre recibido tras el login. -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/imc_welcome_default"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
+        <!-- Explica qué medidas debe introducir el usuario. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/imc_instructions"
+            android:textColor="#BBBBBB"
+            android:textSize="15sp" />
+
+        <!-- Peso corporal expresado en kilogramos. -->
+        <EditText
+            android:id="@+id/etWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/imc_weight_hint"
+            android:inputType="numberDecimal"
+            android:labelFor="@id/etWeight"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#9DFF00" />
+
+        <!-- Estatura expresada en centímetros. -->
+        <EditText
+            android:id="@+id/etHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/imc_height_hint"
+            android:inputType="numberDecimal"
+            android:labelFor="@id/etHeight"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#9DFF00" />
+
+        <!-- Inicia el cálculo del índice de masa corporal. -->
+        <Button
+            android:id="@+id/btnCalculateImc"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#9DFF00"
+            android:text="@string/imc_calculate"
+            android:textAllCaps="false"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Muestra el valor calculado y su categoría orientativa. -->
+        <TextView
+            android:id="@+id/tvImcResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:accessibilityLiveRegion="polite"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Aclara que el IMC no sustituye una evaluación profesional. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/imc_disclaimer"
+            android:textColor="#AAAAAA"
+            android:textSize="13sp" />
+
+        <!-- Cierra la pantalla de IMC y vuelve a la pantalla de acceso. -->
+        <Button
+            android:id="@+id/btnImcLogout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#333333"
+            android:text="@string/imc_logout"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+</ScrollView>

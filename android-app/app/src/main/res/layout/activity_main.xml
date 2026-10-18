@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main">
+
+    <!-- IMAGEN DE FONDO -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/hero"
+        android:scaleType="centerCrop" />
+
+    <!-- CAPA OSCURA -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000" />
+
+    <!-- CONTENIDO -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="30dp">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="70dp" />
+
+        <!-- LOGO -->
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/logo" />
+
+        <!-- TITULO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SUPLEMENTOR"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Potencia tu rendimiento"
+            android:textColor="#9DFF00"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="220dp" />
+
+        <!-- BOTON INICIAR SESIÓN (con ID para referencia) -->
+        <Button
+            android:id="@+id/btnIniciarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Iniciar sesión"
+            android:textStyle="bold"
+            android:textColor="#9DFF00"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:backgroundTint="#000000" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Suplementos de calidad para\ncada meta que tienes."
+            android:textColor="#BBBBBB"
+            android:textAlignment="center"
+            android:textSize="13sp"
+            android:layout_marginTop="25dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -25,6 +25,6 @@ La interfaz de la aplicación utiliza HTML, CSS y JavaScript y consume la API La
 
 El proyecto está versionado con Git. Antes de entregar, se deben registrar los cambios actuales y respaldar los aportes de cada integrante con el historial real de commits, archivos desarrollados y actividades comprobables. La tabla de contribuciones de `ARQUITECTURA.md` se debe completar con la información del equipo.
 
-## Texto sugerido para presentar
+## Texto para presentacion
 
 > Profesor(a): presentamos el módulo Suplementor con interfaz HTML, CSS y JavaScript conectada a una API Laravel 13 y Sanctum. La API ofrece autenticación por token, gestión de productos, inventario y usuarios, y registro de ventas validando el stock mediante transacciones. Laravel usa una base separada llamada `suplementor_laravel` para conservar los datos originales. El instalador prepara una cuenta administradora y cinco productos de demostración. En el equipo de desarrollo se validaron la instalación, las migraciones, las pruebas y el inicio de sesión. Para ejecutarlo en otro equipo, se requiere PHP 8.3+ y Composer; siga la guía, inicie Apache y MySQL en XAMPP y Laravel con `php artisan serve`.
