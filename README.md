@@ -38,7 +38,7 @@ Sigue [`laravel-backend/README.md`](laravel-backend/README.md): instala PHP 8.3+
 
 ## Aplicación móvil Android
 
-El proyecto Android está en [`android-app/`](android-app/README.md) y la API PHP que utiliza está en [`mobile-api/`](mobile-api/README.md). Consulta sus guías para crear la base móvil, configurar la IP local del servidor XAMPP y compilar la aplicación desde Android Studio o con Gradle.
+El proyecto Android y su API PHP se mantienen por separado en el [repositorio móvil Suplementor](https://github.com/Olbertc0211/suplementor-movil). Sus instrucciones explican cómo crear la base móvil, configurar la IP local del servidor XAMPP y compilar la aplicación.
 
 ## Estructura actual
 
@@ -59,8 +59,6 @@ suplementor/
 │   ├── routes/api.php      # Rutas protegidas con Sanctum y permisos
 │   └── database/migrations/# Esquema para suplementor_laravel
 │   └── scripts/            # Instalador guiado para Windows
-├── android-app/             # Aplicación Android nativa y calculadora de IMC
-├── mobile-api/              # API PHP para registro e inicio de sesión Android
 └── docs/
     ├── API.md              # Referencia de endpoints
     ├── ARQUITECTURA.md     # Estructura actual y propuesta de evolución
